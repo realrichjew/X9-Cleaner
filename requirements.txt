@@ -1,6 +1,2 @@
 PyQt6>=6.7.0
-<<<<<<< HEAD
 psutil>=5.9.8
-=======
-psutil>=5.9.8
->>>>>>> fee06162d0accf4f0bebe87df3b8bdb20c3bf8b6
