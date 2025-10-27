@@ -12,13 +12,8 @@ Designed for FiveM and Windows environments with an automatic path detector, sle
 - **Automatic Detection:** No manual path setup — detects your FiveM installation.  
 - **Process Manager:** Terminates FiveM and Steam processes automatically.  
 - **Xbox Cleanup:** Removes Xbox apps and related registry traces.  
-<<<<<<< HEAD
-- **Modern GUI:** Dark, sleek, branded PyQt6 interface with glowing progress bar.  
-- **Safe:** Designed for testing environments; deletes only non-critical temporary data.
-=======
 - **Modern GUI:** Dark, sleek, PyQt6 interface bar.  
 - **Safe:** Deletes only non-critical temporary data.
->>>>>>> fee06162d0accf4f0bebe87df3b8bdb20c3bf8b6
 
 ---
 
