@@ -128,6 +128,7 @@ def kill_processes(log):
         "FiveM_ChromeBrowser.exe",
     ]
     log("Terminating running game processes...", "cyan")
+
     for proc in processes:
         try:
             result = subprocess.run(
@@ -137,13 +138,26 @@ def kill_processes(log):
                 stderr=subprocess.PIPE,
                 text=True,
             )
+
             if proc.lower() in result.stdout.lower():
-                subprocess.run(f"taskkill /f /im {proc}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                log(f"Terminated: {proc}", "lightgreen")
+                try:
+                    subprocess.run(
+                        f"taskkill /f /im {proc}",
+                        shell=True,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    log(f"Terminated: {proc}", "lightgreen")
+                except FileNotFoundError:
+                    log(f"Skipped missing runtime file for {proc}", "orange")
+                except Exception as e:
+                    log(f"Error terminating {proc}: {e}", "red")
             else:
                 log(f"Not running: {proc}", "orange")
+
         except Exception as e:
-            log(f"Error terminating {proc}: {e}", "red")
+            log(f"Process check failed for {proc}: {e}", "red")
+
     log("Process termination complete.", "green")
 
 
