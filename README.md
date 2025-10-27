@@ -3,7 +3,7 @@
 Modern PyQt6-based system cleaner built by **X9 Services**.  
 Designed for FiveM and Windows environments with an automatic path detector, sleek GUI, and full cleanup control.
 
-![X9 Services Logo](https://r2.fivemanage.com/pBiGGCmRzm0Awt8Uc72Pb/image_2025-10-26_232314568.png)
+![GUI](https://r2.fivemanage.com/nZsyAV96v7KMPuNo7oF2P/image_2025-10-27_015141509.png)
 
 ---
 
