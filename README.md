@@ -33,8 +33,5 @@ Designed for FiveM and Windows environments with an automatic path detector, sle
 Clone or download the repository, then install dependencies:
 ```bash
 pip install -r requirements.txt
-<<<<<<< HEAD
-python x9services_cleaner_v2.py
-=======
 python x9services_cleaner.py
->>>>>>> fee06162d0accf4f0bebe87df3b8bdb20c3bf8b6
+```
