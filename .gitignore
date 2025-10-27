@@ -1,0 +1,28 @@
+# Build and distribution
+build/
+dist/
+*.spec
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# IDE settings
+.vscode/
+.idea/
+*.iml
+
+# OS files
+Thumbs.db
+.DS_Store
