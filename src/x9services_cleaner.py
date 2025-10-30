@@ -87,6 +87,18 @@ def clean_fivem(log):
     else:
         log(f"FiveM cleaning complete. {deleted_count} items removed.", "green")
 
+def unlink_rockstar(log):
+    """
+    Delete DigitalEntitlements to unlink Rockstar accounts.
+    Safe delete: logs if missing and reports success.
+    """
+    path = os.path.join(os.getenv("LOCALAPPDATA", ""), "DigitalEntitlements")
+    log("Unlinking Rockstar: removing DigitalEntitlements...", "cyan")
+    if os.path.exists(path):
+        delete_path(path, log, "lightgreen")
+        log("Unlink Rockstar complete.", "green")
+    else:
+        log(f"DigitalEntitlements not found: {path}", "orange")
 
 def clean_temp(log):
     local = os.getenv("LOCALAPPDATA") or ""
@@ -190,6 +202,8 @@ class Worker(QtCore.QThread):
                     clean_steam(self.log)
                 elif task == "kill_processes":
                     kill_processes(self.log)
+                elif task == "unlink_rockstar":
+                    unlink_rockstar(self.log)
             except Exception as e:
                 self.log(f"Task {task} failed: {e}", "red")
             self.progress_signal.emit(int(((i + 1) / total) * 100), f"Completed {task}")
@@ -240,7 +254,8 @@ class MainWindow(QtWidgets.QMainWindow):
         sbox.addSpacing(20)
 
         actions = [
-            ("Clean FiveM + AppData", ["clean_fivem"]),
+            ("Unlink Rockstar Account", ["unlink_rockstar"]),
+            ("Clean FiveM Files", ["clean_fivem"]),
             ("Clean Temp Files", ["clean_temp"]),
             ("Clean Steam", ["clean_steam"]),
             ("Clean Microsoft Logs", ["clean_microsoft"]),
