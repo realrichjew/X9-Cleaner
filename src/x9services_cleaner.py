@@ -12,6 +12,15 @@ from PyQt6 import QtWidgets, QtGui, QtCore
 import urllib.request
 import tempfile
 
+HOSTS_FILE = r"C:\Windows\System32\drivers\etc\hosts"
+FIREWALL_RULE_NAME = "Rockstar Patch Rule"
+DEFAULT_RGL_PATH = r"C:\Program Files\Rockstar Games\Launcher\Launcher.exe"
+HOSTS_ENTRIES = [
+    "127.0.0.1    prod.ros.rockstargames.com",
+    "127.0.0.1    patch.rockstargames.com",
+    "127.0.0.1    launcher.rockstargames.com"
+]
+
 # Privilege Handling
 def ensure_admin():
     try:
@@ -22,11 +31,9 @@ def ensure_admin():
     except Exception:
         pass
 
-
 # Utility
 def safe_expand(path):
     return os.path.expandvars(path) if path else path
-
 
 def delete_path(path, log, color):
     path = safe_expand(path)
@@ -44,7 +51,6 @@ def delete_path(path, log, color):
             log(f"Deleted file: {path}", color)
     except Exception as e:
         log(f"Error deleting {path}: {e}", "red")
-
 
 # Cleaning Tasks
 def clean_fivem(log):
@@ -89,7 +95,7 @@ def clean_fivem(log):
 
 def unlink_rockstar(log):
     """
-    Delete DigitalEntitlements to unlink Rockstar accounts.
+    Delete DigitalEntitlements to unlink Rockstar account.
     Safe delete: logs if missing and reports success.
     """
     path = os.path.join(os.getenv("LOCALAPPDATA", ""), "DigitalEntitlements")
@@ -172,6 +178,54 @@ def kill_processes(log):
 
     log("Process termination complete.", "green")
 
+def add_hosts_entries():
+    try:
+        with open(HOSTS_FILE, "a") as file:
+            for entry in HOSTS_ENTRIES:
+                file.write(entry + "\n")
+    except Exception:
+        pass
+
+def remove_hosts_entries():
+    try:
+        with open(HOSTS_FILE, "r") as file:
+            lines = file.readlines()
+        with open(HOSTS_FILE, "w") as file:
+            for line in lines:
+                if not any(host in line for host in ["prod.ros", "patch.rockstar", "launcher.rockstar"]):
+                    file.write(line)
+    except Exception:
+        pass
+
+def add_firewall_rule(log):
+    if not os.path.exists(DEFAULT_RGL_PATH):
+        log(f"Launcher not found at default path: {DEFAULT_RGL_PATH}", "orange")
+        return
+    command = f'netsh advfirewall firewall add rule name="{FIREWALL_RULE_NAME}" dir=out action=block program="{DEFAULT_RGL_PATH}" enable=yes'
+    subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log("Firewall rule added for Rockstar Launcher.", "lightgreen")
+
+
+def remove_firewall_rule(log):
+    subprocess.run(
+        ["netsh", "advfirewall", "firewall", "delete", "rule", f"name={FIREWALL_RULE_NAME}"],
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    log("Firewall rule removed.", "lightgreen")
+
+def apply_network_fix(log):
+    log("Applying network fix (temporary Rockstar block)...", "cyan")
+    add_hosts_entries()
+    add_firewall_rule(log)
+    log("Network fix applied successfully.", "green")
+
+def revert_network_fix(log):
+    log("Reverting network fix (restoring Rockstar access)...", "cyan")
+    remove_hosts_entries()
+    remove_firewall_rule(log)
+    log("Network settings restored successfully.", "green")
 
 # Worker Thread
 class Worker(QtCore.QThread):
@@ -204,13 +258,16 @@ class Worker(QtCore.QThread):
                     kill_processes(self.log)
                 elif task == "unlink_rockstar":
                     unlink_rockstar(self.log)
+                elif task == "apply_network_fix":
+                    apply_network_fix(self.log)
+                elif task == "revert_network_fix":
+                    revert_network_fix(self.log)
             except Exception as e:
                 self.log(f"Task {task} failed: {e}", "red")
             self.progress_signal.emit(int(((i + 1) / total) * 100), f"Completed {task}")
             time.sleep(0.25)
         self.log("All tasks finished.", "cyan")
         self.finished_signal.emit()
-
 
 # Main GUI
 class MainWindow(QtWidgets.QMainWindow):
@@ -261,6 +318,8 @@ class MainWindow(QtWidgets.QMainWindow):
             ("Clean Microsoft Logs", ["clean_microsoft"]),
             ("Kill Game Processes", ["kill_processes"]),
             ("Full Clean (All)", ["kill_processes", "clean_fivem", "clean_temp", "clean_microsoft", "clean_steam"]),
+            ("Apply Network Fix", ["apply_network_fix"]),
+            ("Revert Network Fix", ["revert_network_fix"]),
         ]
 
         for label, tasks in actions:
@@ -341,7 +400,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.progress.setValue(val)
         self.progress.setFormat(text)
 
-
 # Entrypoint
 def main():
     ensure_admin()
@@ -349,7 +407,6 @@ def main():
     mw = MainWindow()
     mw.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
