@@ -1,7 +1,7 @@
 # X9 Cleaner
 
 Modern PyQt6-based system cleaner built by **X9 Services**.  
-Designed for FiveM and Windows environments with an automatic path detector, sleek GUI, and full cleanup control.
+Designed for Windows with an automatic path detector, sleek GUI, and full cleanup control.
 
 ![GUI](https://r2.fivemanage.com/nZsyAV96v7KMPuNo7oF2P/image_2025-10-27_015141509.png)
 
@@ -12,7 +12,7 @@ Designed for FiveM and Windows environments with an automatic path detector, sle
 - **Automatic Detection:** No manual path setup — detects your FiveM installation.  
 - **Process Manager:** Terminates FiveM and Steam processes automatically.  
 - **Xbox Cleanup:** Removes Xbox apps and related registry traces.  
-- **Modern GUI:** Dark, sleek, PyQt6 interface bar.  
+- **Modern GUI:** Dark, sleek, PyQt6 interface.  
 - **Safe:** Deletes only non-critical temporary data.
 
 ---
